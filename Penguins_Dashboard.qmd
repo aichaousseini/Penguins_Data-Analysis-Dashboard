@@ -1,0 +1,128 @@
+---
+title: "Penguins_Dashboard"
+format:
+  dashboard:
+    orientation: rows
+server: shiny
+---
+
+```{r}
+#| context: setup
+require(dplyr)
+require(ggplot2)
+require(shiny)
+
+```
+
+
+# Analyse univariee 
+
+## Sidebar {.sidebar}
+
+```{r}
+# Species
+species = iris %>%
+select(Species) %>%
+pull() %>%
+levels()
+
+# Variable
+variables = names(iris[-5])
+# Select variable
+varSelectInput(
+inputId = "selectInputVariable",
+label = "Variable",
+data = iris[, -5]
+)
+
+# Select Species
+checkboxGroupInput(
+  inputId = "checkboxSpecies",
+  label = "Species",
+  choices = species,
+  selected = species
+)
+
+```
+
+## rows 
+
+```{r}
+plotOutput(
+  outputId = "plot1"
+)
+tableOutput(
+  outputId = "univariateStatsSpecies"
+)
+
+```
+
+
+
+
+# Analyse bivariees
+
+## {.sidebar}
+
+```{r}
+
+# Select variable
+selectInput(
+  inputId = "selectInputVariable",
+  label = "Select Variable",
+  choices = variables,
+  selected = variables[1]
+)
+
+# Select second variable for bivariate analysis
+selectInput(
+  inputId = "selectInputVariable2",
+  label = "Select Second Variable",
+  choices = variables,
+  selected = variables[2]
+)
+```
+
+## rows
+
+```{r}
+
+plotOutput(
+  outputId = "plot2"
+)
+
+```
+
+
+```{r}
+#| context: server
+output$plot1 <- renderPlot({
+  iris %>%
+    filter(Species %in% input$checkboxSpecies) %>%
+    ggplot(mapping = aes_string(x = input$selectInputVariable, fill = "Species", colour = "Species")) +
+    geom_density(alpha = 0.3)
+}) 
+
+output$univariateStatsSpecies <- renderTable({
+  iris %>%
+    filter(Species %in% input$checkboxSpecies) %>%
+    group_by(Species) %>%
+    summarise(
+      mean = mean(.data[[input$selectInputVariable]], na.rm = TRUE),
+      min = min(.data[[input$selectInputVariable]], na.rm = TRUE),
+      max = max(.data[[input$selectInputVariable]], na.rm = TRUE),
+      variance = var(.data[[input$selectInputVariable]], na.rm = TRUE),
+      median = median(.data[[input$selectInputVariable]], na.rm = TRUE)
+    )
+}) 
+
+output$plot2 <- renderPlot({
+  iris %>%
+    filter(Species %in% input$checkboxSpecies) %>%
+    ggplot(mapping = aes_string(x = input$selectInputVariable, y = input$selectInputVariable2, colour = "Species")) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE)
+})
+
+```
+
