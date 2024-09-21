@@ -3,11 +3,11 @@
 
 **Étapes du projet :**
   
-  ** 1: Prétraitement des données :**
+  **1: Prétraitement des données :**
   - Identification et suppression des observations contenant des valeurs manquantes.
   - Nettoyage des données pour garantir une analyse fiable.
 
-  ** 2: Analyse descriptive et exploratoire :**
+  **2: Analyse descriptive et exploratoire :**
   
   - Calcul des statistiques descriptives univariées pour chaque variable (longueur du bec, profondeur du bec, taille des nageoires, etc.).
   - Exploration des relations entre les variables à l’aide de visualisations graphiques :
@@ -15,7 +15,7 @@
   - Relation entre la taille des becs et des nageoires.
   - Répartition des caractéristiques entre les trois espèces de pingouins.
     
-  ** 3: Création d’un dashboard interactif :**
+  **3: Création d’un dashboard interactif :**
 
 - Un dashboard Quarto pour présenter les principales statistiques du jeu de données, permettant une exploration dynamique et visuelle.
 - Utilisation de ggplot2 pour créer des visualisations efficaces et de plotly pour les rendre interactives.
