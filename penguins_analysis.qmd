@@ -1,0 +1,149 @@
+---
+title: " penguins_analysis"
+format: html
+editor: visual
+---
+
+```{r}
+#| context: setup
+#| echo: false
+#| message: false
+require(dplyr)
+require(ggplot2)
+require(plotly)
+require(tidyr)
+require(tidyverse)
+require(kableExtra)
+
+```
+
+## 2.1: Donnees
+
+Le jeu de donnees penguins.csv contient des mesures morphologiques pour trois especes de pingouins observees sur trois Ãiles de l'archipel Palmer, en Antarctique
+
+### Chargement et Affichage de donnees
+
+```{r}
+library(kableExtra)
+penguins <- read.csv('penguins.csv')
+kable(head(penguins, 5))
+
+```
+
+## 2.2: Travail A faire
+
+### 1. Determiner le nombre d'observations manquantes de chaque variable en une seule commande.
+
+```{r}
+colSums(is.na(penguins))
+```
+
+### 2. Determiner le nombre de lignes containant au moins une valeur manquante.
+
+```{r}
+sum(apply(penguins, 1, function(x) any(is.na(x))))
+```
+
+### 3. Pour la suite des analyses, on supprime toute ligne contenant au moins une donnee manqueante. Supprimer ces lignes.
+
+```{r}
+penguins_clean <- na.omit(penguins)
+print(dim(penguins_clean))
+```
+
+### 4. Calculer et commenter les statistiques descriptives univariees.
+
+pour bien Afficher et commenter cette statistique, nous ferons la statistique univariees des variables par espece
+
+
+```{r}
+descriptive_stats_species <- penguins_clean %>%
+  group_by(species) %>%
+  summarise(across(where(is.numeric), list(
+    mean = ~mean(.x, na.rm = TRUE), 
+    sd = ~sd(.x, na.rm = TRUE), 
+    min = ~min(.x, na.rm = TRUE), 
+    max = ~max(.x, na.rm = TRUE), 
+    median = ~median(.x, na.rm = TRUE)
+  )))
+
+print("Statistiques descriptives univariees par espece :")
+print(descriptive_stats_species)
+```
+
+
+
+
+### 5. Comment pouvons-nous repondre graphiquement aux questions suivantes avec ggplot2?
+
+#### a. Y a-t-il une relation entre la longueur et la profondeur des becs ?
+
+pour visualiser s'il y a une relation entre la longueur et la profondeur des becs, un nuage de points serait appropriee
+
+```{r}
+(ggplot(data = penguins_clean, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(color = "blue") +
+  labs(title = "Relation entre la longueur et la profondeur des becs",
+       x = "Longueur du bec (mm)",
+       y = "Profondeur du bec (mm)") +
+  theme_minimal()) -> gg
+gg %>%
+  ggplotly()
+
+```
+
+#### b. Est-ce que la taille des becs et des nageoires varient ensemble ?
+
+Pour visualiser si la taille des becs et des nageoires varient ensemble, un nuage de points avec la taille des becs sur un axe et la taille des nageoires sur l'autre axe serait approprie
+
+```{r}
+
+(ggplot(data = penguins_clean, aes(x = bill_length_mm, y = flipper_length_mm)) +
+  geom_point() +
+  labs(title = "Relation entre la longueur du bec et la longueur des nageoires",
+       x = "Longueur du bec (mm)",
+       y = "Longueur des nageoires (mm)") +
+  theme_minimal()) ->gg
+gg %>%
+  ggplotly()
+
+```
+
+## c. Comment ces mesures sont-elles reparties entre les 3 especes
+
+Pour visualiser comment ces mesures sont reparties entre les 3 especes, un boxplot serait approprie
+
+###### Repartition de la longueur du bec entre les 3 especes
+
+```{r}
+
+(ggplot(data = penguins_clean, aes(x = species, y = bill_length_mm, fill = species)) +
+  geom_boxplot() +
+  theme_minimal()) ->gg
+gg %>%
+  ggplotly()
+
+```
+
+###### Repartition de la profondeur du bec entre les 3 especes
+
+```{r}
+(ggplot(data = penguins_clean, aes(x = species, y = bill_depth_mm, fill = species)) +
+  geom_boxplot() +
+  theme_minimal()) ->gg
+gg %>%
+  ggplotly()
+```
+
+###### Repartition de la longueur des nageoires entre les 3 especes
+
+```{r}
+
+(ggplot(data = penguins_clean, aes(x = species, y = flipper_length_mm, fill = species)) +
+  geom_boxplot() +
+  theme_minimal()) ->gg
+gg %>%
+  ggplotly()
+
+```
+
