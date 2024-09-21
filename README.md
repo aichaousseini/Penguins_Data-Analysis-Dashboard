@@ -4,7 +4,7 @@
 
 **Étapes du projet:**
   
-    **1: Prétraitement des données :**
+  **1: Prétraitement des données :**
     
   - Identification et suppression des observations contenant des valeurs manquantes.
   - Nettoyage des données pour garantir une analyse fiable.
